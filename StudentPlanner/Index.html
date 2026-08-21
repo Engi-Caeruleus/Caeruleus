@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>My Student Planner</title>
+
+    <link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" href="favicon.png">
+    <link
+        id="favicon"
+        rel="icon"
+        href="favicon.png"
+    >
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            Xian's Super Amazing Task Manager
+        </div>
+
+        <nav>
+
+            <button
+                class="nav-button active"
+                data-page="dashboard"
+            >
+                Dashboard
+            </button>
+
+            <button
+                class="nav-button"
+                data-page="tasks"
+            >
+                Tasks
+            </button>
+
+            <button
+                class="nav-button"
+                data-page="calendar"
+            >
+                Calendar
+            </button>
+
+            <button
+                class="nav-button"
+                data-page="progress"
+            >
+                Progress
+            </button>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <button
+                class="nav-button"
+                data-page="settings"
+            >
+                Settings
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+
+        <!-- DASHBOARD -->
+
+        <section
+            id="dashboard-page"
+            class="page"
+        >
+
+            <header class="topbar">
+
+                <div>
+
+                    <h1>GISING!</h1>
+
+                    <p>
+                        ANO PLANO NATIN SA BUHAY HUY
+                    </p>
+
+                </div>
+
+                <div class="topbar-buttons">
+
+                    <button
+                        class="icon-button notification-button"
+                        id="notification-button"
+                    >
+                        🔔
+
+                        <span
+                            id="notification-badge"
+                            class="notification-badge hidden"
+                        >
+                            0
+                        </span>
+
+                    </button>
+
+                    <button
+                        class="icon-button"
+                        id="settings-button"
+                    >
+                        ⚙️
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- STATISTICS -->
+
+            <section class="stats">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        💩
+                    </div>
+
+                    <div>
+
+                        <h2 id="total-tasks">
+                            0
+                        </h2>
+
+                        <p>
+                            Total Tasks
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🤯
+                    </div>
+
+                    <div>
+
+                        <h2 id="due-soon">
+                            0
+                        </h2>
+
+                        <p>
+                            Due Soon
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        (≧ᗜ≦)
+                    </div>
+
+                    <div>
+
+                        <h2 id="completed-tasks">
+                            0
+                        </h2>
+
+                        <p>
+                            Completed
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- CONTENT GRID -->
+
+            <section class="content-grid">
+
+
+                <!-- TODAY'S TASKS -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h2>
+                                Today's Tasks
+                            </h2>
+
+                            <p>
+                                Tasks you need to work on today
+                            </p>
+
+                        </div>
+
+                        <button class="add-button">
+                            + Add Task
+                        </button>
+
+                    </div>
+
+                    <div id="today-tasks-container"></div>
+
+                </div>
+
+
+                <!-- UPCOMING -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h2>
+                                Upcoming
+                            </h2>
+
+                            <p>
+                                Your next deadlines
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div id="upcoming-container"></div>
+
+                </div>
+
+            </section>
+
+
+            <!-- OVERALL PROGRESS -->
+
+            <section class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>
+                            Overall Progress
+                        </h2>
+
+                        <p>
+                            Keep track of your productivity
+                        </p>
+
+                    </div>
+
+                    <strong id="dashboard-progress">
+                        0%
+                    </strong>
+
+                </div>
+
+                <div class="progress-bar">
+
+                    <div
+                        id="dashboard-progress-fill"
+                        class="progress-fill"
+                    ></div>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- TASKS PAGE -->
+
+        <section
+            id="tasks-page"
+            class="page hidden-page"
+        >
+
+            <header class="page-title">
+
+                <div>
+
+                    <h1>
+                        Tasks
+                    </h1>
+
+                    <p>
+                        Manage all your tasks
+                    </p>
+
+                </div>
+
+                <button class="add-button">
+                    + Add Task
+                </button>
+
+            </header>
+
+            <div class="panel">
+
+                <div id="all-tasks-container"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CALENDAR -->
+
+        <section
+            id="calendar-page"
+            class="page hidden-page"
+        >
+
+            <header class="page-title">
+
+                <div>
+
+                    <h1>
+                        Calendar
+                    </h1>
+
+                    <p>
+                        See when your tasks are due
+                    </p>
+
+                </div>
+
+            </header>
+
+
+            <div class="panel">
+
+                <div class="calendar-header">
+
+                    <button
+                        id="previous-month"
+                        class="calendar-button"
+                    >
+                        ←
+                    </button>
+
+                    <h2 id="calendar-month"></h2>
+
+                    <button
+                        id="next-month"
+                        class="calendar-button"
+                    >
+                        →
+                    </button>
+
+                </div>
+
+
+                <div class="calendar-weekdays">
+
+                    <span>Sun</span>
+                    <span>Mon</span>
+                    <span>Tue</span>
+                    <span>Wed</span>
+                    <span>Thu</span>
+                    <span>Fri</span>
+                    <span>Sat</span>
+
+                </div>
+
+
+                <div
+                    id="calendar-days"
+                    class="calendar-days"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PROGRESS PAGE -->
+
+        <section
+            id="progress-page"
+            class="page hidden-page"
+        >
+
+            <header class="page-title">
+
+                <div>
+
+                    <h1>
+                        Progress
+                    </h1>
+
+                    <p>
+                        See how productive you've been
+                    </p>
+
+                </div>
+
+            </header>
+
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>
+                            Overall Progress
+                        </h2>
+
+                        <p>
+                            Average progress of all tasks
+                        </p>
+
+                    </div>
+
+                    <strong id="big-progress">
+                        0%
+                    </strong>
+
+                </div>
+
+
+                <div class="progress-bar">
+
+                    <div
+                        id="big-progress-fill"
+                        class="progress-fill"
+                    ></div>
+
+                </div>
+
+
+                <div class="progress-stats">
+
+                    <div>
+
+                        <h3 id="progress-total">
+                            0
+                        </h3>
+
+                        <p>
+                            Total Tasks
+                        </p>
+
+                    </div>
+
+                    <div>
+
+                        <h3 id="progress-completed">
+                            0
+                        </h3>
+
+                        <p>
+                            Completed
+                        </p>
+
+                    </div>
+
+                    <div>
+
+                        <h3 id="progress-remaining">
+                            0
+                        </h3>
+
+                        <p>
+                            Remaining
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SETTINGS -->
+
+        <section
+            id="settings-page"
+            class="page hidden-page"
+        >
+
+            <header class="page-title">
+
+                <div>
+
+                    <h1>
+                        Settings
+                    </h1>
+
+                    <p>
+                        Manage your planner
+                    </p>
+
+                </div>
+
+            </header>
+
+
+            <div class="panel">
+
+                <h2>
+                    Excel
+                </h2>
+
+                <p class="settings-description">
+                    Export your tasks to Excel or import them.
+                </p>
+
+
+                <div class="settings-buttons">
+
+                    <button
+                        class="excel-button"
+                        id="export-excel"
+                    >
+                        📊 Export to Excel
+                    </button>
+
+                    <button
+                        class="excel-button"
+                        id="import-excel-button"
+                    >
+                        📥 Import Excel
+                    </button>
+
+                    <input
+                        type="file"
+                        id="excel-file"
+                        accept=".xlsx,.xls"
+                        hidden
+                    >
+
+                </div>
+
+
+                <hr>
+
+
+                <button
+                    class="danger-button"
+                    id="clear-tasks"
+                >
+                    🗑️ Delete All Tasks
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- TASK MODAL -->
+
+    <div
+        id="task-modal"
+        class="modal hidden"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2 id="modal-title">
+                        Add New Task
+                    </h2>
+
+                    <p>
+                        Manage your task
+                    </p>
+
+                </div>
+
+                <button
+                    id="close-modal"
+                    class="close-button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="task-form">
+
+                <label>
+                    Task Name
+                </label>
+
+                <input
+                    type="text"
+                    id="task-title"
+                    required
+                >
+
+
+                <div class="form-row">
+
+                    <div>
+
+                        <label>
+                            Subject
+                        </label>
+
+                        <input
+                            type="text"
+                            id="task-subject"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div>
+
+                        <label>
+                            Priority
+                        </label>
+
+                        <select id="task-priority">
+
+                            <option value="HIGH">
+                                High
+                            </option>
+
+                            <option value="MEDIUM">
+                                Medium
+                            </option>
+
+                            <option value="LOW">
+                                Low
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <label>
+                    Due Date
+                </label>
+
+                <input
+                    type="date"
+                    id="task-due-date"
+                    required
+                >
+
+
+                <label>
+                    Progress
+                </label>
+
+                <div class="modal-progress">
+
+                    <input
+                        type="range"
+                        id="task-progress"
+                        min="0"
+                        max="100"
+                        value="0"
+                    >
+
+                    <strong id="modal-progress-value">
+                        0%
+                    </strong>
+
+                </div>
+
+
+                <label>
+                    Notes / What have you completed?
+                </label>
+
+                <textarea
+                    id="task-notes"
+                    rows="4"
+                    placeholder="Write what you have completed or what still needs to be done..."
+                ></textarea>
+
+                <small>
+                    Notes are required when progress is below 100%.
+                </small>
+
+
+                <div class="modal-buttons">
+
+                    <button
+                        type="button"
+                        id="cancel-task"
+                        class="cancel-button"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="save-button"
+                    >
+                        Save Task
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- NOTIFICATION SOUND -->
+
+    <audio
+        id="notification-sound"
+        preload="auto"
+    >
+        <source
+            src="notification.mp3"
+            type="audio/mpeg"
+        >
+    </audio>
+
+
+    <!-- EXCEL -->
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+    <!-- JAVASCRIPT -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
