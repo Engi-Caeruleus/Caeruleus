@@ -50,6 +50,9 @@ function loadTasks() {
         notes:
             task.notes || "",
 
+        description:
+            task.description || "",
+
         completed:
             task.completed === true ||
             Number(task.progress) === 100
@@ -125,6 +128,11 @@ const progressValue =
 const notesInput =
     document.getElementById(
         "task-notes"
+    );
+
+const descriptionInput =
+    document.getElementById(
+        "task-description"
     );
 
 
@@ -205,6 +213,9 @@ function openEditTask(id) {
 
     notesInput.value =
         task.notes || "";
+
+    descriptionInput.value =
+        task.description || "";
 
 
     modal.classList.remove(
@@ -336,6 +347,9 @@ form.addEventListener(
         const notes =
             notesInput.value.trim();
 
+        const description =
+            descriptionInput.value.trim();
+
 
         // Notes required below 100%
 
@@ -389,6 +403,9 @@ form.addEventListener(
                 task.notes =
                     notes;
 
+                task.description =
+                    description;
+
                 task.completed =
                     progress === 100;
 
@@ -422,6 +439,9 @@ form.addEventListener(
 
                 notes:
                     notes,
+
+                description:
+                    description,
 
                 completed:
                     progress === 100
@@ -533,6 +553,19 @@ function createTaskElement(task) {
 
             </div>
 
+
+            ${
+                task.description
+                    ? `
+                        <div class="task-description">
+                            <strong> What to do:</strong>
+                            <div>${escapeHTML(
+                                task.description
+                            )}</div>
+                        </div>
+                    `
+                    : ""
+            }
 
             ${
                 task.notes
@@ -968,6 +1001,18 @@ function renderUpcoming() {
                             task.subject
                         )}
                     </p>
+
+                    ${
+                        task.description
+                            ? `
+                                <p class="deadline-description">
+                                     ${escapeHTML(
+                                        task.description
+                                    )}
+                                </p>
+                            `
+                            : ""
+                    }
 
                 </div>
 
@@ -2046,7 +2091,10 @@ document
                                 : "No",
 
                         Notes:
-                            task.notes
+                            task.notes,
+
+                        "What to Do":
+                            task.description
 
                     })
                 );
@@ -2198,6 +2246,10 @@ document
 
                                     notes:
                                         row.Notes ||
+                                        "",
+
+                                    description:
+                                        row["What to Do"] ||
                                         ""
 
                                 };
