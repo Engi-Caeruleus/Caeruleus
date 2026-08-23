@@ -38,6 +38,7 @@ function loadTasks() {
 
     }
 
+
     tasks = tasks.map(task => ({
 
         ...task,
@@ -305,25 +306,32 @@ form.addEventListener(
 
         event.preventDefault();
 
+
         const title =
             titleInput.value.trim();
+
 
         const subject =
             subjectInput.value.trim();
 
+
         const priority =
             priorityInput.value;
 
+
         const dueDate =
             dateInput.value;
+
 
         const progress =
             Number(
                 progressInput.value
             );
 
+
         const notes =
             notesInput.value.trim();
+
 
         const description =
             descriptionInput.value.trim();
@@ -360,6 +368,7 @@ form.addEventListener(
                         editingTaskId
                 );
 
+
             if (task) {
 
                 task.title =
@@ -389,6 +398,7 @@ form.addEventListener(
             }
 
         }
+
 
         // New task
 
@@ -448,6 +458,7 @@ function createTaskElement(task) {
         document.createElement(
             "div"
         );
+
 
     element.className =
         "task";
@@ -620,6 +631,7 @@ function createTaskElement(task) {
                             "What did you complete?"
                         );
 
+
                     if (
                         !notes ||
                         notes.trim() === ""
@@ -632,10 +644,12 @@ function createTaskElement(task) {
 
                     }
 
+
                     task.notes =
                         notes.trim();
 
                 }
+
 
                 task.progress =
                     100;
@@ -662,6 +676,7 @@ function createTaskElement(task) {
                             "What still needs to be done?"
                         );
 
+
                     if (
                         !notes ||
                         notes.trim() === ""
@@ -670,6 +685,7 @@ function createTaskElement(task) {
                         return;
 
                     }
+
 
                     task.notes =
                         notes.trim();
@@ -739,7 +755,9 @@ function renderTodayTasks() {
             "today-tasks-container"
         );
 
+
     container.innerHTML = "";
+
 
     const today =
         getTodayString();
@@ -793,6 +811,7 @@ function renderAllTasks() {
         document.getElementById(
             "all-tasks-container"
         );
+
 
     container.innerHTML = "";
 
@@ -871,7 +890,7 @@ function deleteTask(id) {
 
 
 // ========================================
-// UPCOMING
+// DUE SOON
 // ========================================
 
 function renderUpcoming() {
@@ -881,14 +900,97 @@ function renderUpcoming() {
             "upcoming-container"
         );
 
+
     container.innerHTML = "";
 
 
-    const upcoming =
+    const today =
+        new Date(
+            getTodayString() +
+            "T00:00:00"
+        );
+
+
+    const dueSoon =
         [...tasks]
             .filter(
-                task =>
-                    !task.completed
+                task => {
+
+                    // Ignore completed tasks
+
+                    if (
+                        task.completed
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    if (
+                        !task.dueDate
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    const dueDate =
+                        new Date(
+                            task.dueDate +
+                            "T00:00:00"
+                        );
+
+
+                    const daysUntil =
+                        Math.round(
+                            (
+                                dueDate -
+                                today
+                            ) /
+                            (
+                                1000 *
+                                60 *
+                                60 *
+                                24
+                            )
+                        );
+
+
+                    let reminderDays;
+
+
+                    if (
+                        task.priority ===
+                        "HIGH"
+                    ) {
+
+                        reminderDays = 3;
+
+                    } else if (
+                        task.priority ===
+                        "MEDIUM"
+                    ) {
+
+                        reminderDays = 2;
+
+                    } else {
+
+                        reminderDays = 1;
+
+                    }
+
+
+                    // Show task from its reminder day
+                    // through its deadline
+
+                    return (
+                        daysUntil >= 0 &&
+                        daysUntil <= reminderDays
+                    );
+
+                }
             )
             .sort(
                 (a, b) =>
@@ -898,20 +1000,16 @@ function renderUpcoming() {
                     new Date(
                         b.dueDate
                     )
-            )
-            .slice(
-                0,
-                5
             );
 
 
     if (
-        upcoming.length === 0
+        dueSoon.length === 0
     ) {
 
         container.innerHTML = `
             <p class="empty-message">
-                🎉 Nothing coming up!
+                🎉 Nothing due soon!
             </p>
         `;
 
@@ -920,14 +1018,61 @@ function renderUpcoming() {
     }
 
 
-    upcoming.forEach(
+    dueSoon.forEach(
         task => {
 
-            const date =
+            const dueDate =
                 new Date(
                     task.dueDate +
                     "T00:00:00"
                 );
+
+
+            const todayDate =
+                new Date(
+                    getTodayString() +
+                    "T00:00:00"
+                );
+
+
+            const daysUntil =
+                Math.round(
+                    (
+                        dueDate -
+                        todayDate
+                    ) /
+                    (
+                        1000 *
+                        60 *
+                        60 *
+                        24
+                    )
+                );
+
+
+            let deadlineText;
+
+
+            if (
+                daysUntil === 0
+            ) {
+
+                deadlineText =
+                    "DUE TODAY";
+
+            } else if (
+                daysUntil === 1
+            ) {
+
+                deadlineText =
+                    "Due tomorrow";
+
+            } else {
+
+                deadlineText =
+                    `Due in ${daysUntil} days`;
+
+            }
 
 
             const element =
@@ -945,11 +1090,11 @@ function renderUpcoming() {
                 <div class="date">
 
                     <strong>
-                        ${date.getDate()}
+                        ${dueDate.getDate()}
                     </strong>
 
                     <span>
-                        ${date
+                        ${dueDate
                             .toLocaleDateString(
                                 "en-US",
                                 {
@@ -977,18 +1122,9 @@ function renderUpcoming() {
                         )}
                     </p>
 
-
-                    ${
-                        task.description
-                            ? `
-                                <p class="deadline-description">
-                                    ${escapeHTML(
-                                        task.description
-                                    )}
-                                </p>
-                            `
-                            : ""
-                    }
+                    <p class="deadline-description">
+                        ${deadlineText}
+                    </p>
 
                 </div>
 
@@ -1285,8 +1421,6 @@ function updateFavicon() {
         );
 
 
-    // Background
-
     ctx.fillStyle =
         "#20232a";
 
@@ -1297,8 +1431,6 @@ function updateFavicon() {
         64
     );
 
-
-    // Red circle
 
     ctx.fillStyle =
         "#e53935";
@@ -1318,8 +1450,6 @@ function updateFavicon() {
 
     ctx.fill();
 
-
-    // Number
 
     ctx.fillStyle =
         "white";
@@ -1411,8 +1541,6 @@ function checkTaskNotifications() {
     tasks.forEach(
         task => {
 
-            // Don't remind completed tasks
-
             if (
                 task.completed
             ) {
@@ -1438,8 +1566,6 @@ function checkTaskNotifications() {
                 );
 
 
-            // Calculate days until deadline
-
             const difference =
                 Math.round(
                     (
@@ -1455,8 +1581,6 @@ function checkTaskNotifications() {
                 );
 
 
-            // Determine reminder timing
-
             let reminderDays;
 
 
@@ -1465,8 +1589,6 @@ function checkTaskNotifications() {
                 "HIGH"
             ) {
 
-                // High = 3 days before
-
                 reminderDays = 3;
 
             } else if (
@@ -1474,20 +1596,16 @@ function checkTaskNotifications() {
                 "MEDIUM"
             ) {
 
-                // Medium = 2 days before
-
                 reminderDays = 2;
 
             } else {
-
-                // Low = 1 day before
 
                 reminderDays = 1;
 
             }
 
 
-            // Reminder before deadline
+            // Before deadline
 
             if (
                 difference ===
@@ -1507,7 +1625,7 @@ function checkTaskNotifications() {
             }
 
 
-            // Deadline day reminder
+            // Deadline day
 
             if (
                 difference === 0
@@ -1563,8 +1681,6 @@ function checkTaskNotifications() {
 
             }
 
-
-            // Prevent duplicate notifications
 
             if (
                 localStorage.getItem(
@@ -1648,8 +1764,6 @@ function showTaskNotification(
         );
 
 
-    // Browser notification
-
     if (
         "Notification" in window
     ) {
@@ -1671,8 +1785,6 @@ function showTaskNotification(
 
     }
 
-
-    // Website notification
 
     showPlannerNotification(
         message
