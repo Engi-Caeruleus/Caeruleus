@@ -225,6 +225,223 @@ function closeModal() {
 }
 
 
+// ========================================
+// VIEW TASK MODAL (click a task to see everything)
+// ========================================
+
+const viewModal =
+    document.getElementById(
+        "view-task-modal"
+    );
+
+const viewModalTitle =
+    document.getElementById(
+        "view-modal-title"
+    );
+
+const viewModalSubject =
+    document.getElementById(
+        "view-modal-subject"
+    );
+
+const viewModalPriority =
+    document.getElementById(
+        "view-modal-priority"
+    );
+
+const viewModalDue =
+    document.getElementById(
+        "view-modal-due"
+    );
+
+const viewModalProgressText =
+    document.getElementById(
+        "view-modal-progress-text"
+    );
+
+const viewModalProgressFill =
+    document.getElementById(
+        "view-modal-progress-fill"
+    );
+
+const viewModalDescriptionWrap =
+    document.getElementById(
+        "view-modal-description-wrap"
+    );
+
+const viewModalDescription =
+    document.getElementById(
+        "view-modal-description"
+    );
+
+const viewModalNotesWrap =
+    document.getElementById(
+        "view-modal-notes-wrap"
+    );
+
+const viewModalNotes =
+    document.getElementById(
+        "view-modal-notes"
+    );
+
+
+let viewingTaskId = null;
+
+
+function openViewTask(id) {
+
+    const task =
+        tasks.find(
+            task =>
+                task.id === id
+        );
+
+    if (!task) return;
+
+    viewingTaskId = id;
+
+    viewModalTitle.textContent =
+        task.title;
+
+    viewModalSubject.textContent =
+        task.subject;
+
+    viewModalPriority.textContent =
+        task.priority;
+
+    viewModalPriority.className =
+        "priority " +
+        task.priority.toLowerCase();
+
+    viewModalDue.textContent =
+        "Due " +
+        formatDate(task.dueDate);
+
+    const progress =
+        Number(task.progress) || 0;
+
+    viewModalProgressText.textContent =
+        progress + "%";
+
+    viewModalProgressFill.style.width =
+        progress + "%";
+
+
+    if (
+        task.description &&
+        task.description.trim() !== ""
+    ) {
+
+        viewModalDescription.textContent =
+            task.description;
+
+        viewModalDescriptionWrap.style.display =
+            "";
+
+    } else {
+
+        viewModalDescriptionWrap.style.display =
+            "none";
+
+    }
+
+
+    if (
+        task.notes &&
+        task.notes.trim() !== ""
+    ) {
+
+        viewModalNotes.textContent =
+            task.notes;
+
+        viewModalNotesWrap.style.display =
+            "";
+
+    } else {
+
+        viewModalNotesWrap.style.display =
+            "none";
+
+    }
+
+
+    viewModal.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+function closeViewModal() {
+
+    viewModal.classList.add(
+        "hidden"
+    );
+
+    viewingTaskId = null;
+
+}
+
+
+document
+    .getElementById(
+        "close-view-modal"
+    )
+    .addEventListener(
+        "click",
+        closeViewModal
+    );
+
+
+document
+    .getElementById(
+        "close-view-modal-btn"
+    )
+    .addEventListener(
+        "click",
+        closeViewModal
+    );
+
+
+document
+    .getElementById(
+        "view-modal-edit"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            if (viewingTaskId) {
+
+                const id =
+                    viewingTaskId;
+
+                closeViewModal();
+
+                openEditTask(id);
+
+            }
+
+        }
+    );
+
+
+viewModal.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target === viewModal
+        ) {
+
+            closeViewModal();
+
+        }
+
+    }
+);
+
+
 document
     .getElementById(
         "close-modal"
@@ -603,6 +820,36 @@ function createTaskElement(task) {
         </div>
 
     `;
+
+
+    // Click task to view full details
+
+    element.style.cursor =
+        "pointer";
+
+    element.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target.closest(
+                    ".task-checkbox"
+                ) ||
+                event.target.closest(
+                    ".task-actions"
+                )
+            ) {
+
+                return;
+
+            }
+
+            openViewTask(
+                task.id
+            );
+
+        }
+    );
 
 
     // Checkbox
@@ -1129,6 +1376,21 @@ function renderUpcoming() {
                 </div>
 
             `;
+
+
+            element.style.cursor =
+                "pointer";
+
+            element.addEventListener(
+                "click",
+                function() {
+
+                    openViewTask(
+                        task.id
+                    );
+
+                }
+            );
 
 
             container.appendChild(
