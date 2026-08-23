@@ -586,7 +586,7 @@ body {
     font-size: 12px;
     color: #555;
     line-height: 1.5;
-    white-space: pre-face;
+    white-space: pre-wrap;
 }
 
 .task-description strong {
@@ -612,7 +612,7 @@ body {
 
     color: #666;
 
-    white-space: pre-face;
+    white-space: pre-wrap;
 }
 
 
