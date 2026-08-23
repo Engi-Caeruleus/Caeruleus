@@ -20,7 +20,6 @@ function loadTasks() {
             "studentPlannerTasks"
         );
 
-
     if (saved) {
 
         try {
@@ -38,7 +37,6 @@ function loadTasks() {
         tasks = [];
 
     }
-
 
     tasks = tasks.map(task => ({
 
@@ -147,15 +145,12 @@ function openAddTask() {
     modalTitle.textContent =
         "Add New Task";
 
-
     form.reset();
-
 
     progressInput.value = 0;
 
     progressValue.textContent =
         "0%";
-
 
     modal.classList.remove(
         "hidden"
@@ -176,47 +171,36 @@ function openEditTask(id) {
                 task.id === id
         );
 
-
     if (!task) return;
 
-
     editingTaskId = id;
-
 
     modalTitle.textContent =
         "Edit Task";
 
-
     titleInput.value =
         task.title;
-
 
     subjectInput.value =
         task.subject;
 
-
     priorityInput.value =
         task.priority;
-
 
     dateInput.value =
         task.dueDate;
 
-
     progressInput.value =
         task.progress || 0;
 
-
     progressValue.textContent =
         (task.progress || 0) + "%";
-
 
     notesInput.value =
         task.notes || "";
 
     descriptionInput.value =
         task.description || "";
-
 
     modal.classList.remove(
         "hidden"
@@ -321,28 +305,22 @@ form.addEventListener(
 
         event.preventDefault();
 
-
         const title =
             titleInput.value.trim();
-
 
         const subject =
             subjectInput.value.trim();
 
-
         const priority =
             priorityInput.value;
 
-
         const dueDate =
             dateInput.value;
-
 
         const progress =
             Number(
                 progressInput.value
             );
-
 
         const notes =
             notesInput.value.trim();
@@ -381,7 +359,6 @@ form.addEventListener(
                         task.id ===
                         editingTaskId
                 );
-
 
             if (task) {
 
@@ -472,7 +449,6 @@ function createTaskElement(task) {
             "div"
         );
 
-
     element.className =
         "task";
 
@@ -558,14 +534,22 @@ function createTaskElement(task) {
                 task.description
                     ? `
                         <div class="task-description">
-                            <strong> What to do:</strong>
-                            <div>${escapeHTML(
-                                task.description
-                            )}</div>
+
+                            <strong>
+                                What to do:
+                            </strong>
+
+                            <div>
+                                ${escapeHTML(
+                                    task.description
+                                )}
+                            </div>
+
                         </div>
                     `
                     : ""
             }
+
 
             ${
                 task.notes
@@ -636,7 +620,6 @@ function createTaskElement(task) {
                             "What did you complete?"
                         );
 
-
                     if (
                         !notes ||
                         notes.trim() === ""
@@ -649,12 +632,10 @@ function createTaskElement(task) {
 
                     }
 
-
                     task.notes =
                         notes.trim();
 
                 }
-
 
                 task.progress =
                     100;
@@ -681,7 +662,6 @@ function createTaskElement(task) {
                             "What still needs to be done?"
                         );
 
-
                     if (
                         !notes ||
                         notes.trim() === ""
@@ -690,7 +670,6 @@ function createTaskElement(task) {
                         return;
 
                     }
-
 
                     task.notes =
                         notes.trim();
@@ -760,9 +739,7 @@ function renderTodayTasks() {
             "today-tasks-container"
         );
 
-
     container.innerHTML = "";
-
 
     const today =
         getTodayString();
@@ -816,7 +793,6 @@ function renderAllTasks() {
         document.getElementById(
             "all-tasks-container"
         );
-
 
     container.innerHTML = "";
 
@@ -904,7 +880,6 @@ function renderUpcoming() {
         document.getElementById(
             "upcoming-container"
         );
-
 
     container.innerHTML = "";
 
@@ -1002,11 +977,12 @@ function renderUpcoming() {
                         )}
                     </p>
 
+
                     ${
                         task.description
                             ? `
                                 <p class="deadline-description">
-                                     ${escapeHTML(
+                                    ${escapeHTML(
                                         task.description
                                     )}
                                 </p>
@@ -1413,7 +1389,7 @@ function playNotificationSound() {
 
 
 // ========================================
-// TASK NOTIFICATION
+// TASK NOTIFICATIONS
 // ========================================
 
 function checkTaskNotifications() {
@@ -1422,60 +1398,241 @@ function checkTaskNotifications() {
         getTodayString();
 
 
-    const dueToday =
-        tasks.filter(
-            task =>
-                task.dueDate === today &&
-                !task.completed
+    const todayDate =
+        new Date(
+            today +
+            "T00:00:00"
         );
 
 
-    if (
-        dueToday.length === 0
-    ) {
-
-        return;
-
-    }
+    const reminders = [];
 
 
-    const notificationKey =
-        "notified-" + today;
+    tasks.forEach(
+        task => {
+
+            // Don't remind completed tasks
+
+            if (
+                task.completed
+            ) {
+
+                return;
+
+            }
 
 
-    if (
-        localStorage.getItem(
-            notificationKey
-        )
-    ) {
+            if (
+                !task.dueDate
+            ) {
 
-        return;
+                return;
 
-    }
+            }
 
 
-    playNotificationSound();
+            const dueDate =
+                new Date(
+                    task.dueDate +
+                    "T00:00:00"
+                );
 
 
-    showTaskNotification(
-        dueToday
+            // Calculate days until deadline
+
+            const difference =
+                Math.round(
+                    (
+                        dueDate -
+                        todayDate
+                    ) /
+                    (
+                        1000 *
+                        60 *
+                        60 *
+                        24
+                    )
+                );
+
+
+            // Determine reminder timing
+
+            let reminderDays;
+
+
+            if (
+                task.priority ===
+                "HIGH"
+            ) {
+
+                // High = 3 days before
+
+                reminderDays = 3;
+
+            } else if (
+                task.priority ===
+                "MEDIUM"
+            ) {
+
+                // Medium = 2 days before
+
+                reminderDays = 2;
+
+            } else {
+
+                // Low = 1 day before
+
+                reminderDays = 1;
+
+            }
+
+
+            // Reminder before deadline
+
+            if (
+                difference ===
+                reminderDays
+            ) {
+
+                reminders.push({
+
+                    task:
+                        task,
+
+                    type:
+                        "before"
+
+                });
+
+            }
+
+
+            // Deadline day reminder
+
+            if (
+                difference === 0
+            ) {
+
+                reminders.push({
+
+                    task:
+                        task,
+
+                    type:
+                        "today"
+
+                });
+
+            }
+
+        }
     );
 
 
-    localStorage.setItem(
-        notificationKey,
-        "true"
+    if (
+        reminders.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    reminders.forEach(
+        reminder => {
+
+            const task =
+                reminder.task;
+
+
+            let notificationKey;
+
+
+            if (
+                reminder.type ===
+                "today"
+            ) {
+
+                notificationKey =
+                    `notified-deadline-${task.id}-${today}`;
+
+            } else {
+
+                notificationKey =
+                    `notified-reminder-${task.id}-${today}`;
+
+            }
+
+
+            // Prevent duplicate notifications
+
+            if (
+                localStorage.getItem(
+                    notificationKey
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            let message;
+
+
+            if (
+                reminder.type ===
+                "today"
+            ) {
+
+                message =
+                    `⚠️ "${task.title}" is due today!`;
+
+            } else {
+
+                const days =
+                    task.priority ===
+                    "HIGH"
+                        ? 3
+                        : task.priority ===
+                          "MEDIUM"
+                            ? 2
+                            : 1;
+
+
+                message =
+                    `🔔 "${task.title}" is due in ${days} day${days === 1 ? "" : "s"}!`;
+
+            }
+
+
+            playNotificationSound();
+
+
+            showTaskNotification(
+                [task],
+                message
+            );
+
+
+            localStorage.setItem(
+                notificationKey,
+                "true"
+            );
+
+        }
     );
 
 }
 
 
 // ========================================
-// TASK NOTIFICATION
+// SHOW TASK NOTIFICATION
 // ========================================
 
 function showTaskNotification(
-    dueTasks
+    dueTasks,
+    customMessage = null
 ) {
 
     const count =
@@ -1483,10 +1640,15 @@ function showTaskNotification(
 
 
     const message =
-        count === 1
-            ? `Your task "${dueTasks[0].title}" is due today!`
-            : `You have ${count} tasks due today!`;
+        customMessage ||
+        (
+            count === 1
+                ? `Your task "${dueTasks[0].title}" is due today!`
+                : `You have ${count} tasks due today!`
+        );
 
+
+    // Browser notification
 
     if (
         "Notification" in window
@@ -1498,7 +1660,7 @@ function showTaskNotification(
         ) {
 
             new Notification(
-                "📚 Student Planner",
+                "Student Planner",
                 {
                     body:
                         message
@@ -1509,6 +1671,8 @@ function showTaskNotification(
 
     }
 
+
+    // Website notification
 
     showPlannerNotification(
         message
@@ -2028,7 +2192,7 @@ document
             } else {
 
                 alert(
-                    `📚 You have ${unfinished.length} unfinished task(s).`
+                    `You have ${unfinished.length} unfinished task(s).`
                 );
 
             }
@@ -2429,7 +2593,11 @@ loadTasks();
 updateEverything();
 
 
-// Check notifications every 30 seconds
+// ========================================
+// CHECK NOTIFICATIONS
+// ========================================
+
+// Check every 30 seconds
 
 setInterval(
     checkTaskNotifications,
@@ -2437,10 +2605,14 @@ setInterval(
 );
 
 
-// Check once when page starts
+// Check immediately when page starts
 
 checkTaskNotifications();
 
+
+// ========================================
+// REQUEST NOTIFICATION PERMISSION
+// ========================================
 
 // Ask for browser notification permission
 // after the user interacts with the page
